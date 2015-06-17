@@ -3,6 +3,7 @@ import pygame
 from pygame.locals import *
 import PIL
 from PIL import Image
+import RPi.GPIO as GPIO
 
 import sys, os
 
@@ -11,6 +12,7 @@ import constants as con
 
 # global variables
 screen = None
+mode = con.STORYMODE
 
 # implementation
 
@@ -27,14 +29,42 @@ def setup():
 	screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
 	screen.fill(con.BACKGROUNDCOLOUR)
 	pygame.display.flip()
+	
+	# setup buttons
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(con.ADVANCEBUTTON, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+	GPIO.setup(con.MODEBUTTON, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
+	
+	
 
-# testing whether the esc key has been pressed	
-def test_for_exit():	
+# testing for keyboard or button input
+def test_for_input():
+	global mode
+	toggle = True
+	while (GPIO.input(con.MODEBUTTON)):
+		if toggle: 
+			if mode == con.VIDEOMODE:
+				print "here we would switch the mode to the picture mode."
+				mode = con.STORYMODE
+			elif mode == con.STORYMODE:
+				print "here we would switch the mode to the video mode."
+				mode = con.VIDEOMODE
+			toggle = False
+			
+	while (GPIO.input(con.ADVANCEBUTTON)):
+		if toggle:
+			if mode == con.VIDEOMODE:
+				print "here we would advance to the next video"
+			elif mode == con.STORYMODE:
+				print "here we would advance to the next picture"
+			toggle = False
+					
 	for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_ESCAPE:
 				print "Goodbye."
 				exit()
+	
 	
 			
 # main function
@@ -42,7 +72,9 @@ def main():
 	setup()	
 	# for now only a way to exit
 	while True:
-		test_for_exit()
+		if mode == con.STORYMODE:
+			print "storytimes"
+		test_for_input()
 
 main()
 
