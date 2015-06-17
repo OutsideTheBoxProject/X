@@ -1,7 +1,10 @@
 # global imports
 import pygame
 from pygame.locals import *
-import sys
+import PIL
+from PIL import Image
+
+import sys, os
 
 # local imports
 import constants as con
@@ -32,10 +35,11 @@ def test_for_exit():
 			if event.key == pygame.K_ESCAPE:
 				print "Goodbye."
 				exit()
-				
+	
+			
 # main function
 def main():
-	setup()
+	setup()	
 	# for now only a way to exit
 	while True:
 		test_for_exit()
