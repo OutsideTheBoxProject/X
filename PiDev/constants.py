@@ -1,0 +1,15 @@
+SCREENWIDTH = 800
+SCREENHEIGHT = 600
+
+BACKGROUNDCOLOUR = (250, 250, 250)
+
+LOCALDIR = "/home/pi/OutsideTheBox/X/PiDev/"
+
+STDOUTFILE = LOCALDIR + "console_output.txt"
+STDOUTVIAFILE = 1
+STDOUTVIACONS = 2
+STDOUT = STDOUTVIACONS
+
+DATA = LOCALDIR + "data/"
+VIDEOS = DATA + "videos/"
+PICS = DATA + "storypics/"
