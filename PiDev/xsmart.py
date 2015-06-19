@@ -18,7 +18,6 @@ storyShown = False
 waiting = 0
 announce = True
 
-
 # implementation
 
 # get an array of available pictures up to the maxpic number
@@ -97,12 +96,12 @@ def test_for_input():
 				print "Goodbye."
 				exit()
 	
-# suggest picture pause
-def no_pictures():
+# suggest a pause
+def suggest_pause(pause):
 	global screen
 	screen.fill(con.BACKGROUNDCOLOUR)
 	font = pygame.font.Font(con.FONT, 40)
-	text = font.render("Ich habe gerade keine Bilder mehr.", 1, con.BLUE)
+	text = font.render("Ich habe gerade keine " + pause + " mehr.", 1, con.BLUE)
 	screen.blit(text, (con.SCREENWIDTH/8, con.SCREENHEIGHT/4))
 	text = font.render("Mach vielleicht mal eine Pause.", 1, con.BLUE)
 	screen.blit(text, (con.SCREENWIDTH/6, con.SCREENHEIGHT/3))
@@ -128,7 +127,7 @@ def storytime():
 		picPool.remove(pic)
 	else: 
 		if waiting < con.WAITCTR:
-			no_pictures()
+			suggest_pause("Bilder")
 			waiting = waiting + 1
 		else: 
 			waiting = 0
