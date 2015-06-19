@@ -14,15 +14,24 @@ import constants as con
 screen = None
 mode = con.STORYMODE
 picPool = []
+vidPool = []
 storyShown = False
 waiting = 0
 announce = True
+movie = None
+playing = False
+movieScreen = None
+clock = None
 
 # implementation
 
 # get an array of available pictures up to the maxpic number
 def get_pictures():
 	return random.sample(os.listdir(con.PICS), con.MAXPICS)
+	
+# returns an array of available videos up to the maxvid number
+def get_videos():
+	return random.sample(os.listdir(con.VIDEOS), con.MAXVIDS)
 
 # this declutters the main function
 def setup():
@@ -43,8 +52,9 @@ def setup():
 	GPIO.setup(con.MODEBUTTON, GPIO.IN, pull_up_down = GPIO.PUD_DOWN)
 	
 	# setup picture pool
-	global picPool
+	global picPool, vidPool
 	picPool = get_pictures()
+	vidPool = get_videos()
 	
 # mode announcing made easy
 def announce_mode(modeText):
@@ -64,16 +74,25 @@ def announce_storymode():
 def announce_videomode():
 	announce_mode("Neue Filme!")
 
+# does all the setup for finishing a movie
+def finish_movie():
+	global movie
+	movie.stop()
+	screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
+
+
 
 # testing for keyboard or button input
 def test_for_input():
-	global mode, picPool, storyShown, announce
+	global mode, picPool, storyShown, announce, movie
 	toggle = True
 	while (GPIO.input(con.MODEBUTTON)):
 		if toggle: 
 			if mode == con.VIDEOMODE:
 				mode = con.STORYMODE
 				announce = True
+				if not movie == None:
+					movie.stop()
 				picPool = get_pictures()
 				storytime()
 			elif mode == con.STORYMODE:
@@ -85,7 +104,9 @@ def test_for_input():
 	while (GPIO.input(con.ADVANCEBUTTON)):
 		if toggle:
 			if mode == con.VIDEOMODE:
-				print "here we would advance to the next video"
+				if not movie == None:
+					movie.stop()
+				videotime()
 			elif mode == con.STORYMODE:
 				storytime()
 			toggle = False
@@ -121,7 +142,7 @@ def storytime():
 	elif len(picPool) > 0 and waiting == 0:
 		if len(picPool) == con.MAXPICS:
 			flush_screen()	
-		pic =  random.choice(picPool)	
+		pic = random.choice(picPool)	
 		screen.blit(pygame.image.load(con.PICS + pic), (0,0))
 		pygame.display.flip()	
 		picPool.remove(pic)
@@ -135,18 +156,40 @@ def storytime():
 			
 # shows a random video in the current vidPool
 def videotime():
+	global vidPool, screen, waiting, announce, movie, movieScreen, clock
 	if announce: 
 		announce_videomode()
+	elif len(vidPool) > 0 and waiting == 0:
+		vid = random.choice(vidPool)
+		clock = pygame.time.Clock()
+		movie = pygame.movie.Movie(con.VIDEOS + vid)
+		screen = pygame.display.set_mode(movie.get_size(), pygame.FULLSCREEN)
+		movieScreen = pygame.Surface(movie.get_size()).convert()
+		movie.set_display(movieScreen)
+		movie.play()
+		vidPool.remove(vid)
+	else:
+		if waiting < con.WAITCTR:
+			suggest_pause("Filme")
+			waiting = waiting + 1
+		else:
+			waiting = 0
+			vidPool = get_videos()
+		
 			
 # main function
 def main():
-	global storyShown
+	global storyShown, movieScreen, screen, clock
 	setup()	
 	# for now only a way to exit
 	while True:
 		if mode == con.STORYMODE and not storyShown:
 			storytime()
 			storyShown = True
+		if playing:
+			screen.blit(movieScreen, (0,0))
+			pygame.display.flip()
+			clock.tick(con.FPS)
 		test_for_input()
 
 main()
