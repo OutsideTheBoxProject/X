@@ -4,6 +4,7 @@ from pygame.locals import *
 import PIL
 from PIL import Image
 import RPi.GPIO as GPIO
+from pyomxplayer import OMXPlayer
 
 import sys, os, random
 
@@ -18,10 +19,8 @@ vidPool = []
 storyShown = False
 waiting = 0
 announce = True
-movie = None
+omx = None
 playing = False
-movieScreen = None
-clock = None
 
 # implementation
 
@@ -74,42 +73,36 @@ def announce_storymode():
 def announce_videomode():
 	announce_mode("Neue Filme!")
 
-# does all the setup for finishing a movie
-def finish_movie():
-	global movie
-	movie.stop()
-	screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
-
-
-
 # testing for keyboard or button input
 def test_for_input():
-	global mode, picPool, storyShown, announce, movie
+	global mode, picPool, storyShown, announce, omx, vidPool, playing
 	toggle = True
-	while (GPIO.input(con.MODEBUTTON)):
-		if toggle: 
-			if mode == con.VIDEOMODE:
-				mode = con.STORYMODE
-				announce = True
-				if not movie == None:
-					movie.stop()
-				picPool = get_pictures()
-				storytime()
-			elif mode == con.STORYMODE:
-				mode = con.VIDEOMODE
-				announce = True
-				videotime()
-			toggle = False
+	if not playing:
+		while (GPIO.input(con.MODEBUTTON)):
+			if toggle: 
+				if mode == con.VIDEOMODE:
+					mode = con.STORYMODE
+					if not omx == None:
+						omx.stop()
+					announce = True
+					picPool = get_pictures()
+					storytime()
+				elif mode == con.STORYMODE:
+					mode = con.VIDEOMODE
+					announce = True
+					vidPool = get_videos()
+					videotime()
+				toggle = False
 			
-	while (GPIO.input(con.ADVANCEBUTTON)):
-		if toggle:
-			if mode == con.VIDEOMODE:
-				if not movie == None:
-					movie.stop()
-				videotime()
-			elif mode == con.STORYMODE:
-				storytime()
-			toggle = False
+		while (GPIO.input(con.ADVANCEBUTTON)):
+			if toggle:
+				if mode == con.VIDEOMODE:
+					if not omx == None: 
+						omx.stop()
+					videotime()
+				elif mode == con.STORYMODE:
+					storytime()
+				toggle = False
 					
 	for event in pygame.event.get():
 		if event.type == pygame.KEYDOWN:
@@ -153,20 +146,16 @@ def storytime():
 		else: 
 			waiting = 0
 			picPool = get_pictures()	
+			announce = True 
 			
 # shows a random video in the current vidPool
 def videotime():
-	global vidPool, screen, waiting, announce, movie, movieScreen, clock
+	global vidPool, screen, waiting, announce, omx, playing
 	if announce: 
 		announce_videomode()
 	elif len(vidPool) > 0 and waiting == 0:
 		vid = random.choice(vidPool)
-		clock = pygame.time.Clock()
-		movie = pygame.movie.Movie(con.VIDEOS + vid)
-		screen = pygame.display.set_mode(movie.get_size(), pygame.FULLSCREEN)
-		movieScreen = pygame.Surface(movie.get_size()).convert()
-		movie.set_display(movieScreen)
-		movie.play()
+		omx = OMXPlayer(con.VIDEOS + vid, start_playback = True)
 		vidPool.remove(vid)
 	else:
 		if waiting < con.WAITCTR:
@@ -175,21 +164,17 @@ def videotime():
 		else:
 			waiting = 0
 			vidPool = get_videos()
-		
+			announce = True
 			
 # main function
 def main():
-	global storyShown, movieScreen, screen, clock
+	global storyShown, movieScreen, screen, clock, playing
 	setup()	
 	# for now only a way to exit
 	while True:
 		if mode == con.STORYMODE and not storyShown:
 			storytime()
 			storyShown = True
-		if playing:
-			screen.blit(movieScreen, (0,0))
-			pygame.display.flip()
-			clock.tick(con.FPS)
 		test_for_input()
 
 main()
