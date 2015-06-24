@@ -10,6 +10,7 @@ import sys, os, random
 
 # local imports
 import constants as con
+import logging as log
 
 # global variables
 screen = None
@@ -55,6 +56,8 @@ def setup():
 	picPool = get_pictures()
 	vidPool = get_videos()
 	
+	log.log_start_station()
+	
 # mode announcing made easy
 def announce_mode(modeText):
 	global screen, announce
@@ -93,9 +96,11 @@ def test_for_input():
 					vidPool = get_videos()
 					videotime()
 				toggle = False
+				log.log_switch_state(mode)
 			
 		while (GPIO.input(con.ADVANCEBUTTON)):
 			if toggle:
+				log.log_advance_button()
 				if mode == con.VIDEOMODE:
 					if not omx == None: 
 						omx.stop()
@@ -120,6 +125,7 @@ def suggest_pause(pause):
 	text = font.render("Mach vielleicht mal eine Pause.", 1, con.BLUE)
 	screen.blit(text, (con.SCREENWIDTH/6, con.SCREENHEIGHT/3))
 	pygame.display.flip()
+	log.log_pause()
 
 # creates a plain background again after messages
 def flush_screen():
@@ -135,10 +141,11 @@ def storytime():
 	elif len(picPool) > 0 and waiting == 0:
 		if len(picPool) == con.MAXPICS:
 			flush_screen()	
-		pic = random.choice(picPool)	
+		pic = random.choice(picPool)
 		screen.blit(pygame.image.load(con.PICS + pic), (0,0))
 		pygame.display.flip()	
 		picPool.remove(pic)
+		log.log_next(pic)
 	else: 
 		if waiting < con.WAITCTR:
 			suggest_pause("Bilder")
@@ -157,6 +164,7 @@ def videotime():
 		vid = random.choice(vidPool)
 		omx = OMXPlayer(con.VIDEOS + vid, start_playback = True)
 		vidPool.remove(vid)
+		log.log_next(vid)
 	else:
 		if waiting < con.WAITCTR:
 			suggest_pause("Filme")

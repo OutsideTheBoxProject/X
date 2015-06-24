@@ -4,6 +4,7 @@ SCREENHEIGHT = 600
 LOCALDIR = "/home/pi/OutsideTheBox/X/PiDev/"
 
 STDOUTFILE = LOCALDIR + "console_output.txt"
+XSMARTLOG = LOCALDIR + "xsmart_log.txt"
 STDOUTVIAFILE = 1
 STDOUTVIACONS = 2
 STDOUT = STDOUTVIACONS
