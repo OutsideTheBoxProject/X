@@ -1,8 +1,6 @@
 # global imports
 import pygame
 from pygame.locals import *
-import PIL
-from PIL import Image
 import RPi.GPIO as GPIO
 from pyomxplayer import OMXPlayer
 
@@ -64,7 +62,7 @@ def announce_mode(modeText):
 	screen.fill(con.BACKGROUNDCOLOUR)
 	font = pygame.font.Font(con.FONT, 60)
 	text = font.render(modeText, 1, con.ORANGE)
-	screen.blit(text, (con.SCREENWIDTH/3.5, con.SCREENHEIGHT/3))
+	screen.blit(text, (con.SCREENWIDTH/4, con.SCREENHEIGHT/3))
 	pygame.display.flip()
 	announce = False
 
@@ -121,9 +119,9 @@ def suggest_pause(pause):
 	screen.fill(con.BACKGROUNDCOLOUR)
 	font = pygame.font.Font(con.FONT, 40)
 	text = font.render("Ich habe gerade keine " + pause + " mehr.", 1, con.BLUE)
-	screen.blit(text, (con.SCREENWIDTH/8, con.SCREENHEIGHT/4))
+	screen.blit(text, (con.SCREENWIDTH/10, con.SCREENHEIGHT/4))
 	text = font.render("Mach vielleicht mal eine Pause.", 1, con.BLUE)
-	screen.blit(text, (con.SCREENWIDTH/6, con.SCREENHEIGHT/3))
+	screen.blit(text, (con.SCREENWIDTH/8, con.SCREENHEIGHT/3))
 	pygame.display.flip()
 	log.log_pause()
 

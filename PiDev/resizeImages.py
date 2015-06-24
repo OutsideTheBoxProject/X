@@ -16,12 +16,12 @@ def resize_images(filedir):
 		img = Image.open(filedir + f)
 		# hpercent = (600 / float(img.size[1]))
 		# wsize = int((float(img.size[0]) * float(hpercent)))
-		img = img.resize((con.PICTUREWIDTH, con.PICTUREHEIGHT), PIL.Image.ANTIALIAS)
+		img = img.resize((con.SCREENWIDTH, con.SCREENHEIGHT), PIL.Image.ANTIALIAS)
 		img.save(filedir + f)
 	print "done."
 		
 	
 
 # main call
-resize_images(sys.argv[1])
+resize_images("./data/storypics/")
 
