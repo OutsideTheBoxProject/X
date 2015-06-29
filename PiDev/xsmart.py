@@ -73,6 +73,32 @@ def announce_storymode():
 # announces the videomode to the screen
 def announce_videomode():
 	announce_mode("Neue Filme!")
+	
+# toggles modes: 
+def toggle_mode():
+	global mode, picPool, announce, vidPool, omx
+	if mode == con.VIDEOMODE:
+		mode = con.STORYMODE
+		if not omx == None:
+			omx.stop()
+		announce = True
+		picPool = get_pictures()
+		storytime()
+	elif mode == con.STORYMODE:
+		mode = con.VIDEOMODE
+		announce = True
+		vidPool = get_videos()
+		videotime()
+		
+# advances picture or video
+def advance():
+	log.log_advance_button()
+	if mode == con.VIDEOMODE:
+		if not omx == None: 
+			omx.stop()
+		videotime()
+	elif mode == con.STORYMODE:
+		storytime()
 
 # testing for keyboard or button input
 def test_for_input():
@@ -81,30 +107,13 @@ def test_for_input():
 	if not playing:
 		while (GPIO.input(con.MODEBUTTON)):
 			if toggle: 
-				if mode == con.VIDEOMODE:
-					mode = con.STORYMODE
-					if not omx == None:
-						omx.stop()
-					announce = True
-					picPool = get_pictures()
-					storytime()
-				elif mode == con.STORYMODE:
-					mode = con.VIDEOMODE
-					announce = True
-					vidPool = get_videos()
-					videotime()
+				toggle_mode()
 				toggle = False
 				log.log_switch_state(mode)
 			
 		while (GPIO.input(con.ADVANCEBUTTON)):
 			if toggle:
-				log.log_advance_button()
-				if mode == con.VIDEOMODE:
-					if not omx == None: 
-						omx.stop()
-					videotime()
-				elif mode == con.STORYMODE:
-					storytime()
+				advance()
 				toggle = False
 					
 	for event in pygame.event.get():
@@ -112,6 +121,11 @@ def test_for_input():
 			if event.key == pygame.K_ESCAPE:
 				print "Goodbye."
 				exit()
+				
+			elif event.key == pygame.K_a: 
+				advance()
+			elif event.key == pygame.K_t:
+				toggle_mode()
 	
 # suggest a pause
 def suggest_pause(pause):
