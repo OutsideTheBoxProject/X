@@ -1,3 +1,15 @@
+# Hardware Setup:
+# GIPO  (BCM style notation)
+# 0     SDA Real Time Clock
+# 1     SCL Real Time Clock
+# 4     Pi Supply (pin 7)
+# 14    Pi Supply (pin 8)
+# 17    Mode Button
+# 22    Advance Button
+# 3.3V  both Buttons 17 / 22 (active high, internal pull down resistor)
+# 5V    VCC Real Time Clock
+# GND   GND Real Time Clock
+
 # global imports
 import pygame
 from pygame.locals import *
