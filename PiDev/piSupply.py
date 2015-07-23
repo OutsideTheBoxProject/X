@@ -9,4 +9,4 @@ while True: # Setup a while loop to wait for a button press
     if(GPIO.input(4)): # Setup an if loop to run a shutdown command when button press sensed
         os.system("sudo shutdown -h now") # Send shutdown command to os
         break
-    time.sleep(0.3) # Allow a sleep time of 1 second to reduce CPU usage
+    time.sleep(0.2) # Allow a sleep time of 1 second to reduce CPU usage
