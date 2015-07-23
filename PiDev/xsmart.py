@@ -52,15 +52,15 @@ def setup():
 		
 	# setup the screen
 	global screen
-    haveScreen = False
-    while (!haveScreen):
-        try:
-            pygame.init()
-            screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
-            haveScreen = True
-        except pygame.error, message:
-            print "Cannot get screen, trying again in one second"
-            time.sleep(1)
+	haveScreen = False
+	while not haveScreen:
+		try:
+			pygame.init()
+			screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
+			haveScreen = True
+		except pygame.error, message:
+			print "Cannot get screen, trying again in one second"
+			time.sleep(1)
 	flush_screen()
 	pygame.mouse.set_visible(False)
 	
