@@ -16,7 +16,7 @@ from pygame.locals import *
 import RPi.GPIO as GPIO
 from pyomxplayer import OMXPlayer
 
-import sys, os, random
+import sys, os, random, time
 
 # local imports
 import constants as con
@@ -52,8 +52,15 @@ def setup():
 		
 	# setup the screen
 	global screen
-	pygame.init()
-	screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
+    haveScreen = False
+    while (!haveScreen):
+        try:
+            pygame.init()
+            screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
+            haveScreen = True
+        except pygame.error, message:
+            print "Cannot get screen, trying again in one second"
+            time.sleep(1)
 	flush_screen()
 	pygame.mouse.set_visible(False)
 	
