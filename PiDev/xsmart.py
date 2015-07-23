@@ -55,7 +55,7 @@ def setup():
 	pygame.init()
 	screen = pygame.display.set_mode((con.SCREENWIDTH, con.SCREENHEIGHT), pygame.FULLSCREEN)
 	flush_screen()
-    pygame.mouse.set_visible(False)
+	pygame.mouse.set_visible(False)
 	
 	# setup buttons
 	GPIO.setmode(GPIO.BCM)
