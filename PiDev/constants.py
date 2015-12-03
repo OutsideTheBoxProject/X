@@ -29,3 +29,5 @@ MAXPICS = 10
 MAXVIDS = 3
 
 FPS = 60
+
+LOGON = False
